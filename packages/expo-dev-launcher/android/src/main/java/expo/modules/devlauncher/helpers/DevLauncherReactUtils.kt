@@ -4,7 +4,32 @@ import android.content.Context
 import android.util.Log
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
+import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.react.DevLauncherInternalSettings
+
+fun injectReactInterceptor(
+  context: Context,
+  reactNativeHost: ReactNativeHost,
+  debugServerHost: String,
+  appBundleName: String
+): Boolean {
+  injectDevSupportManager(reactNativeHost)
+
+  return injectDebugServerHost(
+    context,
+    reactNativeHost,
+    debugServerHost,
+    appBundleName
+  )
+}
+
+fun injectDevSupportManager(
+  reactNativeHost: ReactNativeHost
+) {
+  DevLauncherDevSupportManagerSwapper()
+    .swapDevSupportManagerImpl(reactNativeHost.reactInstanceManager)
+}
 
 fun injectDebugServerHost(
   context: Context,
@@ -44,5 +69,24 @@ fun findDevMenuPackage(): ReactPackage? {
     clazz.newInstance() as? ReactPackage
   } catch (e: Exception) {
     null
+  }
+}
+
+fun findPackagesWithDevMenuExtension(reactNativeHost: ReactNativeHost): List<ReactPackage> {
+  return try {
+    val clazz = Class.forName("com.facebook.react.PackageList")
+    val ctor = clazz.getConstructor(ReactNativeHost::class.java)
+    val packageList = ctor.newInstance(reactNativeHost)
+
+    val getPackagesMethod = packageList.javaClass.getDeclaredMethod("getPackages")
+    val packages = getPackagesMethod.invoke(packageList) as List<*>
+    return packages
+      .filterIsInstance<ReactPackage>()
+      .filter {
+        it.javaClass.isAnnotationPresent(ContainsDevMenuExtension::class.java)
+      }
+  } catch (e: Exception) {
+    Log.e("DevLauncher", "Unable find packages with dev menu extension.`.", e)
+    emptyList()
   }
 }

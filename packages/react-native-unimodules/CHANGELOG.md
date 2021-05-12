@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Remove expo-permissions (again). ([#12900](https://github.com/expo/expo/pull/12900) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Migrated camera and constants interfaces from their own packages to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.13.3 — 2021-04-13
 
 _This version does not introduce any user-facing changes._

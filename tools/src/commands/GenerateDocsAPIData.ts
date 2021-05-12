@@ -85,6 +85,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-application': ['Application.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
+    'expo-cellular': ['Cellular.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-mail-composer': ['MailComposer.ts'],
@@ -94,6 +95,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-sharing': ['Sharing.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
+    'expo-task-manager': ['TaskManager.ts'],
   };
 
   try {
