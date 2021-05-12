@@ -48,6 +48,7 @@ function setNotificationSounds(projectRoot, { sounds, project, projectName, }) {
             project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
                 filepath: `${projectName}/${fileName}`,
                 groupName: projectName,
+                isBuildFile: true,
                 project,
             });
         }

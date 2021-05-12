@@ -70,6 +70,7 @@ export function setNotificationSounds(
       project = IOSConfig.XcodeUtils.addResourceFileToGroup({
         filepath: `${projectName}/${fileName}`,
         groupName: projectName,
+        isBuildFile: true,
         project,
       });
     }
