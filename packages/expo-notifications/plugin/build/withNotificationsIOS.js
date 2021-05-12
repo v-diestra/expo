@@ -45,7 +45,11 @@ function setNotificationSounds(projectRoot, { sounds, project, projectName, }) {
         if (!project.hasFile(`${projectName}/${fileName}`)) {
             // Need to add the sound file to project.pbxproj so that
             // Xcode recognizes it and includes it in builds
-            project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup(`${projectName}/${fileName}`, projectName, project);
+            project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
+                filepath: `${projectName}/${fileName}`,
+                groupName: projectName,
+                project,
+            });
         }
     }
     return project;
