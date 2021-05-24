@@ -59,6 +59,9 @@ abstract class DevLauncherAppLoader(
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
           reactContextWasInitialized = true
+          synchronized(DevLauncherController.instance) {
+            DevLauncherController.instance.appIsLoading = false
+          }
           continuation!!.resume(true)
         }
       })
