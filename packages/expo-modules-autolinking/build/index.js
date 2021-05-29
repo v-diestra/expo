@@ -43,13 +43,21 @@ module.exports = async function (args) {
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
         const modules = await autolinking_1.resolveModulesAsync(results, options);
+        if (options.packageListTarget) {
+            await autolinking_1.generatePackageListAsync(modules, {
+                ...options,
+                target: options.packageListTarget,
+            });
+        }
         if (options.json) {
             console.log(JSON.stringify({ modules }));
         }
         else {
             console.log({ modules });
         }
-    }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
+    })
+        .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+        .option('-t, --package-list-target <path>', 'Path to the target file, where the package list should be written to.', value => value, null);
     // Generates a source file listing all packages to link.
     registerResolveCommand('generate-package-list', async (results, options) => {
         const modules = options.empty ? [] : await autolinking_1.resolveModulesAsync(results, options);

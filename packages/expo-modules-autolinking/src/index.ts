@@ -70,12 +70,26 @@ module.exports = async function(args: string[]) {
   registerResolveCommand('resolve', async (results, options) => {
     const modules = await resolveModulesAsync(results, options);
 
+    if (options.packageListTarget) {
+      await generatePackageListAsync(modules, {
+        ...options,
+        target: options.packageListTarget,
+      });
+    }
+
     if (options.json) {
       console.log(JSON.stringify({ modules }));
     } else {
       console.log({ modules });
     }
-  }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
+  })
+    .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+    .option<string | null>(
+      '-t, --package-list-target <path>',
+      'Path to the target file, where the package list should be written to.',
+      value => value,
+      null
+    );
 
   // Generates a source file listing all packages to link.
   registerResolveCommand<GenerateOptions>('generate-package-list', async (results, options) => {
