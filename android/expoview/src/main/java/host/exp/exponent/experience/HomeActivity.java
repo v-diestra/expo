@@ -46,6 +46,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.experience.splashscreen.HomeSplashScreenViewProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -85,7 +86,9 @@ public class HomeActivity extends BaseExperienceActivity {
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);
 
-    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView.class, true);
+    HomeSplashScreenViewProvider viewProvider = new HomeSplashScreenViewProvider();
+
+    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView.class, true, viewProvider);
 
     tryInstallLeakCanary(true);
   }

@@ -4,8 +4,14 @@ import android.app.Activity
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.snackbar.Snackbar
 import expo.modules.splashscreen.exceptions.NoContentViewException
 import java.lang.ref.WeakReference
+import java.util.*
+
+import android.content.Intent
+import android.net.Uri
+
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
@@ -17,11 +23,16 @@ class SplashScreenController(
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
       ?: throw NoContentViewException()
-  private var splashScreenView: View = splashScreenViewProvider.createSplashScreenView(activity)
+
+  private var viewContainer = splashScreenViewProvider.createSplashScreenView(activity)
+  private var splashScreenView: View = viewContainer.view
   private val handler = Handler()
 
   private var autoHideEnabled = true
   private var splashScreenShown = false
+
+  private var warningTimerDurationMs: Long = 20000
+  private var warningHandler = Handler()
 
   private var rootView: ViewGroup? = null
 
@@ -34,6 +45,16 @@ class SplashScreenController(
       splashScreenShown = true
       successCallback()
       searchForRootView()
+
+      if (viewContainer.context != SplashScreenViewContext.HOME) {
+        warningHandler.postDelayed({
+          if (BuildConfig.DEBUG) {
+            Snackbar.make(splashScreenView, "Still see the splash screen?", Snackbar.LENGTH_LONG)
+                    .setAction("See More", NavigateToFYI())
+                    .show()
+          }
+        }, warningTimerDurationMs)
+      }
     }
   }
 
@@ -68,6 +89,7 @@ class SplashScreenController(
       autoHideEnabled = true
       splashScreenShown = false
       successCallback(true)
+      warningHandler.removeCallbacksAndMessages(null)
     }
   }
 
@@ -122,5 +144,16 @@ class SplashScreenController(
         }
       }
     })
+  }
+
+}
+
+class NavigateToFYI : View.OnClickListener {
+
+  override fun onClick(v: View) {
+    var url = "https://expo.fyi/splash-screen-hanging"
+    val webpage: Uri = Uri.parse(url)
+    val intent = Intent(Intent.ACTION_VIEW, webpage)
+    v.context.startActivity(intent)
   }
 }

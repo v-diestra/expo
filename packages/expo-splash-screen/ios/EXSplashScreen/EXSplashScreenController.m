@@ -3,11 +3,18 @@
 #import <EXSplashScreen/EXSplashScreenController.h>
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
+#import "MBProgressHUD.h"
+#import "EXSplashScreenHUDButton.h"
+#import "EXSplashScreenViewContainer.h"
 
 @interface EXSplashScreenController ()
 
 @property (nonatomic, weak) UIViewController *viewController;
+@property (nonatomic, strong) EXSplashScreenViewContainer *viewContainer;
 @property (nonatomic, strong) UIView *splashScreenView;
+
+@property (nonatomic, weak) NSTimer *warningTimer;
+@property (nonatomic, weak) MBProgressHUD *warningHud;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
@@ -25,7 +32,8 @@
     _autoHideEnabled = YES;
     _splashScreenShown = NO;
     _appContentAppeared = NO;
-    _splashScreenView = [splashScreenViewProvider createSplashScreenView];
+    _viewContainer = [splashScreenViewProvider createSplashScreenView];
+    _splashScreenView = _viewContainer.view;
   }
   return self;
 }
@@ -44,10 +52,41 @@
     self.splashScreenView.frame = rootView.bounds;
     [rootView addSubview:self.splashScreenView];
     self.splashScreenShown = YES;
+    
+    if (self.viewContainer.context != EXSplashScreenHome) {
+      self.warningTimer = [NSTimer scheduledTimerWithTimeInterval:20.0
+                                                           target:self
+                                                         selector:@selector(showSplashScreenVisibleWarning)
+                                                         userInfo:nil
+                                                          repeats:NO];
+    }
+    
     if (successCallback) {
       successCallback();
     }
   }];
+}
+
+-(void)showSplashScreenVisibleWarning
+{
+#if DEBUG
+  _warningHud = [MBProgressHUD showHUDAddedTo: self.splashScreenView animated:YES];
+  _warningHud.mode = MBProgressHUDModeCustomView;
+  
+  EXSplashScreenHUDButton *button = [EXSplashScreenHUDButton buttonWithType: UIButtonTypeSystem];
+  [button addTarget:self action:@selector(hideWarningView) forControlEvents:UIControlEventTouchUpInside];
+
+  _warningHud.customView = button;
+  _warningHud.offset = CGPointMake(0.f, MBProgressMaxOffset);
+  
+  [_warningHud hideAnimated:YES afterDelay:8.f];
+#endif
+}
+
+-(void)hideWarningView {
+  NSURL *fyiURL = [[NSURL alloc] initWithString:@"https://expo.fyi/splash-screen-hanging"];
+  [[UIApplication sharedApplication] openURL:fyiURL];
+  [_warningHud hideAnimated: YES];
 }
 
 - (void)preventAutoHideWithCallback:(void (^)(BOOL))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
@@ -77,6 +116,9 @@
     [self.splashScreenView removeFromSuperview];
     self.splashScreenShown = NO;
     self.autoHideEnabled = YES;
+    if (self.warningTimer) {
+      [self.warningTimer invalidate];
+    }
     if (successCallback) {
       successCallback(YES);
     }
