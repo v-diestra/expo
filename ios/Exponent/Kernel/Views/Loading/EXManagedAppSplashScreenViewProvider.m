@@ -1,7 +1,6 @@
 #import <React/RCTImageSource.h>
 #import <React/RCTImageView.h>
 #import <UMCore/UMDefines.h>
-#import <EXSplashScreen/EXSplashScreenViewContainer.h>
 
 #import "EXKernel.h"
 #import "EXManagedAppSplashScreenConfiguration.h"
@@ -36,13 +35,12 @@
   }
 }
 
-- (EXSplashScreenViewContainer *)createSplashScreenView
+- (UIView *)createSplashScreenView
 {
   UIView *splashScreenView = [UIView new];
   [self configureSplashScreenView:splashScreenView previousConfiguration:nil];
   _splashScreenView = splashScreenView;
-  EXSplashScreenViewContainer *viewContainer = [[EXSplashScreenViewContainer alloc] initWithView: splashScreenView andContext: EXSplashScreenManaged];
-  return viewContainer;
+  return _splashScreenView;
 }
 
 - (void)configureSplashScreenView:(UIView *)splashScreenView previousConfiguration:(EXManagedAppSplashScreenConfiguration *)previousConfiguration

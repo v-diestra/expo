@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
     [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
   } else if (self.isStandalone) {
-    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
+    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new] withDevWarning: YES];
   }
 
   self.view.backgroundColor = [UIColor whiteColor];
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
+    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider withDevWarning: YES];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -372,7 +372,13 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+
 - (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+  return [self _showSplashScreenWithProvider:provider withDevWarning:NO];
+}
+
+- (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider withDevWarning:(BOOL)showDevWarning
 {
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
@@ -402,6 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
     UM_ENSURE_STRONGIFY(self);
     [splashScreenService showSplashScreenFor:self
                     splashScreenViewProvider:provider
+                              withDevWarning:showDevWarning
                              successCallback:hideRootViewControllerSplashScreen
                              failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
   });

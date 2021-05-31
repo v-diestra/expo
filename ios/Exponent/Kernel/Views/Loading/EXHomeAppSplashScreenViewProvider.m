@@ -1,18 +1,16 @@
 #import <UIKit/UIKit.h>
 #import "EXHomeAppSplashScreenViewProvider.h"
-#import <EXSplashScreen/EXSplashScreenViewContainer.h>
 
 @implementation EXHomeAppSplashScreenViewProvider
 
-- (EXSplashScreenViewContainer *)createSplashScreenView
+- (UIView *)createSplashScreenView
 {
-  EXSplashScreenViewContainer *viewContainer = [super createSplashScreenView];
-  viewContainer.context = EXSplashScreenHome;
+  UIView *view = [super createSplashScreenView];
   
-  UIActivityIndicatorView *activityIndicatorView = (UIActivityIndicatorView *)[viewContainer.view viewWithTag:1];
+  UIActivityIndicatorView *activityIndicatorView = (UIActivityIndicatorView *)[view viewWithTag:1];
   [activityIndicatorView startAnimating];
   
-  return viewContainer;
+  return view;
 }
 
 @end

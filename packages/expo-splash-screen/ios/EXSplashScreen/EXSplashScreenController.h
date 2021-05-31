@@ -7,6 +7,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXSplashScreenController : NSObject
 
+- (void)setShowDevWarning:(BOOL)showDevWarning;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithViewController:(UIViewController *)viewController
