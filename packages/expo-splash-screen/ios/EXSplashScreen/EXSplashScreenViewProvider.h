@@ -2,13 +2,12 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import "EXSplashScreenViewContainer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXSplashScreenViewProvider
 
-- (EXSplashScreenViewContainer *)createSplashScreenView;
+- (UIView *)createSplashScreenView;
 
 @end
 

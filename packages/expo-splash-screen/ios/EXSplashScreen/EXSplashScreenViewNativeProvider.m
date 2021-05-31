@@ -1,12 +1,11 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
-#import "EXSplashScreenViewContainer.h"
 #import <UMCore/UMLogManager.h>
 
 @implementation EXSplashScreenViewNativeProvider
 
-- (nonnull EXSplashScreenViewContainer *)createSplashScreenView
+- (nonnull UIView *)createSplashScreenView
 {
   NSString *splashScreenFilename = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"SplashScreen";
   UIStoryboard *storyboard;
@@ -19,8 +18,10 @@
     @try {
       UIViewController *splashScreenViewController = [storyboard instantiateInitialViewController];
       UIView *splashScreenView = splashScreenViewController.view;
-      EXSplashScreenViewContainer *viewContainer = [[EXSplashScreenViewContainer alloc] initWithView:splashScreenView andContext:EXSplashScreenBare];
-      return viewContainer;
+      
+      
+      return splashScreenView;
+
     } @catch (NSException *_) {
       @throw [NSException exceptionWithName:@"ERR_INVALID_SPLASH_SCREEN"
                                      reason:[NSString stringWithFormat:@"'%@.storyboard'does not contain proper ViewController. Add correct ViewController to your '%@.storyboard' file (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-ios).", splashScreenFilename, splashScreenFilename]
@@ -42,8 +43,7 @@
     }
     UIView *view = views.firstObject;
     view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    EXSplashScreenViewContainer *viewContainer = [[EXSplashScreenViewContainer alloc] initWithView:view andContext:EXSplashScreenBare];
-    return viewContainer;
+    return view;
   }
   
   @throw [NSException exceptionWithName:@"ERR_NO_SPLASH_SCREEN"

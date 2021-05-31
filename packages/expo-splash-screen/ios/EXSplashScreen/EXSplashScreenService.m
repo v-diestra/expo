@@ -31,6 +31,30 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
                    failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
 }
 
+- (void)showSplashScreenFor:(UIViewController *)viewController withDevWarning:(BOOL)withDevWarning
+{
+  id<EXSplashScreenViewProvider> splashScreenViewProvider = [EXSplashScreenViewNativeProvider new];
+  return [self showSplashScreenFor:viewController
+          splashScreenViewProvider:splashScreenViewProvider
+                    withDevWarning: withDevWarning
+                   successCallback:^{}
+                   failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+}
+
+- (void)showSplashScreenFor:(UIViewController *)viewController splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider withDevWarning:(BOOL)showDevWarning successCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
+{
+  if ([self.splashScreenControllers objectForKey:viewController]) {
+    return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
+  }
+  
+  EXSplashScreenController *splashScreenController = [[EXSplashScreenController alloc] initWithViewController:viewController splashScreenViewProvider:splashScreenViewProvider];
+  [splashScreenController setShowDevWarning: showDevWarning];
+  
+  [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
+  [[self.splashScreenControllers objectForKey:viewController] showWithCallback:successCallback
+                                                               failureCallback:failureCallback];
+}
+
 - (void)showSplashScreenFor:(UIViewController *)viewController
    splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
@@ -40,8 +64,8 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
-  EXSplashScreenController *splashScreenController = [[EXSplashScreenController alloc] initWithViewController:viewController
-                                                                                     splashScreenViewProvider:splashScreenViewProvider];
+  EXSplashScreenController *splashScreenController = [[EXSplashScreenController alloc] initWithViewController:viewController splashScreenViewProvider:splashScreenViewProvider];
+  
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
   [[self.splashScreenControllers objectForKey:viewController] showWithCallback:successCallback
                                                                failureCallback:failureCallback];
